@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [10.0.2] - 2023-10-23
+
+### Added
+
+-   Added support for imported object type. using YourTypeName:PackagePath as the widget property.
+
 ## [10.0.1] - 2023-08-24
 
 ### Fixed
