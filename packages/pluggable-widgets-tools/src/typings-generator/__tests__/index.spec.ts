@@ -29,6 +29,8 @@ import { expressionInput, expressionInputNative } from "./inputs/expression";
 import { expressionWebOutput, expressionNativeOutput } from "./outputs/expression";
 import { selectionInput, selectionInputNative } from "./inputs/selection";
 import { selectionNativeOutput, selectionWebOutput } from "./outputs/selection";
+import { externalobjectInput } from "./inputs/external-object";
+import { externalObjectWebOutput } from "./outputs/external-object";
 
 describe("Generating tests", () => {
     it("Generates a parsed typing from XML for native", () => {
@@ -170,6 +172,11 @@ describe("Generating tests", () => {
         const newContent = generateNativeTypesFor(selectionInputNative);
         expect(newContent).toBe(selectionNativeOutput);
     });
+
+    it("Generates a parsed typing from XML for web using externalobject", () => {
+        const newContent = generateFullTypesFor(externalobjectInput);
+        expect(newContent).toBe(externalObjectWebOutput);
+    });
 });
 
 function generateFullTypesFor(xml: string) {
@@ -178,11 +185,13 @@ function generateFullTypesFor(xml: string) {
 
 function generateNativeTypesFor(xml: string) {
     const widgetXml = convertXmltoJson(xml);
+    const externalImports = new Map<string, string[]>();
     const properties = widgetXml!.widget!.properties[0];
     return generateClientTypes(
         "MyWidget",
         extractProperties(properties),
         extractSystemProperties(properties),
+        externalImports,
         true
     ).join("\n\n");
 }

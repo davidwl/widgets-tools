@@ -38,20 +38,24 @@ export function generateForWidget(widgetXml: WidgetXml, widgetName: string) {
     const propElements = widgetXml.widget.properties[0] ?? [];
     const properties = extractProperties(propElements).filter(prop => prop?.$?.key);
     const systemProperties = extractSystemProperties(propElements).filter(prop => prop?.$?.key);
-
-    const clientTypes = generateClientTypes(widgetName, properties, systemProperties, isNative);
+    const externalImports = new Map<string, string[]>();
+    const clientTypes = generateClientTypes(widgetName, properties, systemProperties, externalImports, isNative);
     const modelerTypes = generatePreviewTypes(widgetName, properties, systemProperties);
 
+    
     const generatedTypesCode = clientTypes
         .slice(0, clientTypes.length - 1) // all client auxiliary types
         .concat(modelerTypes.slice(0, modelerTypes.length - 1)) // all preview auxiliary types
         .concat([clientTypes[clientTypes.length - 1], modelerTypes[modelerTypes.length - 1]])
         .join("\n\n");
 
+    
+
     const imports = [
         generateImport("react", generatedTypesCode, ["ComponentType", "CSSProperties", "ReactNode"]),
         generateImport("mendix", generatedTypesCode, mxExports),
-        generateImport("big.js", generatedTypesCode, ["Big"])
+        generateImport("big.js", generatedTypesCode, ["Big"]),
+        ...(Array.from(externalImports).map(e => generateImport(e[0], generatedTypesCode, e[1])))
     ]
         .filter(line => line)
         .join("\n");

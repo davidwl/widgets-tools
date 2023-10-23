@@ -8,6 +8,7 @@ export function generatePreviewTypes(
     systemProperties: SystemProperty[]
 ): string[] {
     const results = Array.of<string>();
+    const externalImportedTypes = new Map<string, string[]>();
     const isLabeled = systemProperties.some(p => p.$.key === "Label");
 
     function resolveProp(key: string) {
@@ -27,7 +28,7 @@ export function generatePreviewTypes(
             : ""
     }
     readOnly: boolean;
-${generatePreviewTypeBody(properties, results, resolveProp)}
+${generatePreviewTypeBody(properties, results, externalImportedTypes, resolveProp)}
 }`);
     return results;
 }
@@ -35,16 +36,18 @@ ${generatePreviewTypeBody(properties, results, resolveProp)}
 function generatePreviewTypeBody(
     properties: Property[],
     generatedTypes: string[],
+    externalImportedTypes: Map<string, string[]>,
     resolveProp: (key: string) => Property | undefined
 ) {
     return properties
-        .map(prop => `    ${prop.$.key}: ${toPreviewPropType(prop, generatedTypes, resolveProp)};`)
+        .map(prop => `    ${prop.$.key}: ${toPreviewPropType(prop, generatedTypes, externalImportedTypes, resolveProp)};`)
         .join("\n");
 }
 
 function toPreviewPropType(
     prop: Property,
     generatedTypes: string[],
+    externalImportedTypes: Map<string, string[]>,
     resolveProp: (key: string) => Property | undefined
 ): string {
     switch (prop.$.type) {
@@ -86,7 +89,7 @@ function toPreviewPropType(
 
             generatedTypes.push(
                 `export interface ${childType} {
-${generatePreviewTypeBody(childProperties, generatedTypes, resolveChildProp)}
+${generatePreviewTypeBody(childProperties, generatedTypes, externalImportedTypes, resolveChildProp)}
 }`
             );
             return prop.$.isList === "true" ? `${childType}[]` : childType;
@@ -103,6 +106,16 @@ ${generatePreviewTypeBody(childProperties, generatedTypes, resolveChildProp)}
             }
             return toUniqueUnionType(selectionTypes.map(s => `"${s}"`));
         default:
+            const parts = prop.$.type?.split(":")??[];
+            if (parts.length == 2) {
+                //object defined exetnally, type parts[0] need import from parts[1]
+                const subinports = externalImportedTypes.get(parts[1])??[];
+                if (!subinports.some(i => i === parts[0])) {
+                    subinports.push(parts[0]);
+                    externalImportedTypes.set(parts[1], subinports);
+                }
+                return parts[0];
+            }
             return "any";
     }
 }

@@ -5,6 +5,7 @@ export function generateClientTypes(
     widgetName: string,
     properties: Property[],
     systemProperties: SystemProperty[],
+    externalImports: Map<string, string[]>,
     isNative: boolean
 ): string[] {
     function resolveProp(key: string) {
@@ -18,7 +19,7 @@ export function generateClientTypes(
             ? `export interface ${widgetName}Props<Style> {
     name: string;
     style: Style[];
-${generateClientTypeBody(properties, true, results, resolveProp)}
+${generateClientTypeBody(properties, true, results, externalImports, resolveProp)}
 }`
             : `export interface ${widgetName}ContainerProps {
     name: string;${
@@ -34,7 +35,7 @@ ${generateClientTypeBody(properties, true, results, resolveProp)}
     id: string;`
             : ""
     }
-${generateClientTypeBody(properties, false, results, resolveProp)}
+${generateClientTypeBody(properties, false, results, externalImports, resolveProp)}
 }`
     );
     return results;
@@ -58,6 +59,7 @@ function generateClientTypeBody(
     properties: Property[],
     isNative: boolean,
     generatedTypes: string[],
+    externalImprtedTypes: Map<string, string[]>,
     resolveProp: (key: string) => Property | undefined
 ) {
     return properties
@@ -70,6 +72,7 @@ function generateClientTypeBody(
                 prop,
                 isNative,
                 generatedTypes,
+                externalImprtedTypes,
                 resolveProp
             )};`;
         })
@@ -102,6 +105,7 @@ function toClientPropType(
     prop: Property,
     isNative: boolean,
     generatedTypes: string[],
+    externalImportedTypes: Map<string, string[]>,
     resolveProp: (key: string) => Property | undefined
 ) {
     switch (prop.$.type) {
@@ -166,7 +170,7 @@ function toClientPropType(
 
             generatedTypes.push(
                 `export interface ${childType} {
-${generateClientTypeBody(childProperties, isNative, generatedTypes, resolveChildProp)}
+${generateClientTypeBody(childProperties, isNative, generatedTypes,externalImportedTypes, resolveChildProp)}
 }`
             );
             return prop.$.isList === "true" ? `${childType}[]` : childType;
@@ -181,6 +185,17 @@ ${generateClientTypeBody(childProperties, isNative, generatedTypes, resolveChild
             const clientTypes = selectionTypes.filter(s => s !== "None").map(toSelectionClientType);
             return toUniqueUnionType(clientTypes);
         default:
+            const parts = prop.$.type?.split(":")??[];
+            if (parts.length == 2) {
+                //object defined exetnally, type parts[0] need import from parts[1]
+                const subinports = externalImportedTypes.get(parts[1])??[];
+                if (!subinports.some(i => i === parts[0])) {
+                    subinports.push(parts[0]);
+                    externalImportedTypes.set(parts[1], subinports);
+                }
+                return parts[0];
+            }
+
             return "any";
     }
 }

@@ -42,7 +42,8 @@ export interface Property {
             | "enumeration"
             | "object"
             | "widgets"
-            | "selection";
+            | "selection"
+            | string;
         isList?: string;
         defaultValue?: string;
         required?: string;
