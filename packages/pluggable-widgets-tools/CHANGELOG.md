@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [10.0.3] - 2023-10-30
+
+### Fixed
+
+-   fix external object type with preview support.
+
 ## [10.0.2] - 2023-10-23
 
 ### Added
