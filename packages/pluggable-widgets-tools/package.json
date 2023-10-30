@@ -1,6 +1,6 @@
 {
-  "name": "@mendix/pluggable-widgets-tools",
-  "version": "10.0.1",
+  "name": "@davidwl/pluggable-widgets-tools",
+  "version": "10.0.2",
   "description": "Mendix Pluggable Widgets Tools",
   "engines": {
     "node": ">=16"
@@ -140,9 +140,9 @@
   ],
   "license": "Apache-2.0",
   "copyright": "© Mendix Technology BV 2022. All rights reserved.",
-  "homepage": "https://github.com/mendix/widgets-tools/tree/master/packages/pluggable-widgets-tools",
+  "homepage": "https://github.com/davidwl/widgets-tools/tree/master/packages/pluggable-widgets-tools",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mendix/widgets-tools/"
+    "url": "https://github.com/davidwl/widgets-tools/"
   }
 }

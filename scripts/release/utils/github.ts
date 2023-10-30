@@ -76,7 +76,7 @@ export class GitHub {
             const release =
                 (await fetch<{ id: string }>(
                     "GET",
-                    `https://api.github.com/repos/mendix/widgets-tools/releases/tags/${releaseTag}`
+                    `https://api.github.com/repos/davidwl/widgets-tools/releases/tags/${releaseTag}`
                 )) ?? [];
 
             if (!release) {

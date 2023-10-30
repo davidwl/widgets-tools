@@ -110,11 +110,20 @@ ${generatePreviewTypeBody(childProperties, generatedTypes, externalImportedTypes
             if (parts.length == 2) {
                 //object defined exetnally, type parts[0] need import from parts[1]
                 const subinports = externalImportedTypes.get(parts[1])??[];
-                if (!subinports.some(i => i === parts[0])) {
-                    subinports.push(parts[0]);
+                
+                const customtypes = parts[0]?.split(",")??[];
+                if (customtypes.length != 2) {
+                    throw new Error("[XML] Custom object type format should be  'your_object,your_previewobject:path_to_module'");
+                }
+                if (!subinports.some(i => i === customtypes[0])) {
+                    subinports.push(customtypes[0]);
+                    subinports.push(customtypes[1]);
                     externalImportedTypes.set(parts[1], subinports);
                 }
-                return parts[0];
+                return customtypes[1].trim();
+            }
+            else {
+                throw new Error("[XML] Custom object type format should be  'your_object,your_previewobject:path_to_module'");
             }
             return "any";
     }

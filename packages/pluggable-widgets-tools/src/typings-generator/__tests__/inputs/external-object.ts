@@ -8,7 +8,7 @@ export const externalobjectInput = `<?xml version="1.0" encoding="utf-8"?>
                 <caption>Content</caption>
                 <description>Sample text input</description>
             </property>
-            <property key="left" type="ScrollContainerRegion:./region" required="true">
+            <property key="left" type="ScrollContainerRegion,ScrollContainerRegionPreview:./region" required="true">
                 <caption>Left Region</caption>
                 <description>Left Region hosts widgets</description>
         </property>

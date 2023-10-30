@@ -5,7 +5,7 @@ export const externalObjectWebOutput = `/**
  */
 import { ComponentType, CSSProperties, ReactNode } from "react";
 import { ActionValue, EditableValue } from "mendix";
-import { ScrollContainerRegion } from "./region";
+import { ScrollContainerRegion, ScrollContainerRegionPreview } from "./region";
 
 export interface MyWidgetContainerProps {
     name: string;
@@ -28,7 +28,7 @@ export interface MyWidgetPreviewProps {
     styleObject?: CSSProperties;
     readOnly: boolean;
     content: { widgetCount: number; renderer: ComponentType<{ children: ReactNode; caption?: string }> };
-    left: ScrollContainerRegion;
+    left: ScrollContainerRegionPreview;
     description: string;
     action: {} | null;
 }
